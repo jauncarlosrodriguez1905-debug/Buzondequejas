@@ -37,6 +37,13 @@ create table if not exists public.staff (
   created_at timestamptz not null default now()
 );
 
+-- Por si la tabla staff ya existía de un intento anterior sin la columna
+-- activo (o sin alguna otra): se agregan las que falten, sin borrar nada.
+alter table public.staff add column if not exists nombre text not null default '';
+alter table public.staff add column if not exists rol text not null default 'DO';
+alter table public.staff add column if not exists activo boolean not null default true;
+alter table public.staff add column if not exists created_at timestamptz not null default now();
+
 create table if not exists public.casos (
   id uuid primary key default gen_random_uuid(),
   folio text not null unique,

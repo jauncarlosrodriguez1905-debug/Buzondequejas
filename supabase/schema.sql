@@ -107,6 +107,52 @@ alter table public.caso_exclusion add column if not exists caso_id uuid;
 alter table public.caso_exclusion add column if not exists user_id uuid;
 alter table public.caso_exclusion add column if not exists created_at timestamptz not null default now();
 
+-- Por si las tablas ya existían con columnas EXTRA de un esquema anterior
+-- marcadas NOT NULL sin default (por ejemplo, un `destino` viejo en
+-- casos_detalle): esos NOT NULL rompen los inserts del buzón aunque la
+-- columna no se use. Se les quita el NOT NULL solo a las columnas que
+-- NO son del diseño de este archivo; las del diseño quedan intactas.
+do $$
+declare
+  t text;
+  v_keep text[];
+  r record;
+begin
+  foreach t in array array['staff', 'casos', 'casos_detalle', 'caso_exclusion'] loop
+    v_keep := case t
+      when 'staff' then array['user_id', 'nombre', 'rol', 'activo', 'created_at']
+      when 'casos' then array['id', 'folio', 'destino', 'fecha_recepcion', 'nivel_gravedad', 'etapa_actual', 'fecha_cierre_meta', 'medida_aplicada', 'cerrado_en']
+      when 'casos_detalle' then array['caso_id', 'tipo_reporte', 'persona_senalada', 'fecha_suceso', 'lugar', 'hechos', 'testigos', 'motivo_javid', 'justificacion_javid', 'medida_descripcion', 'notas_investigacion']
+      when 'caso_exclusion' then array['caso_id', 'user_id', 'created_at']
+    end;
+    for r in
+      select c.column_name
+      from information_schema.columns c
+      where c.table_schema = 'public'
+        and c.table_name = t
+        and c.is_nullable = 'NO'
+        and c.column_default is null
+        and c.is_identity = 'NO'
+        and c.is_generated = 'NEVER'
+        and not (c.column_name = any(v_keep))
+        and not exists (
+          select 1
+          from information_schema.table_constraints tc
+          join information_schema.key_column_usage kcu
+            on kcu.constraint_name = tc.constraint_name
+           and kcu.table_schema = tc.table_schema
+          where tc.table_schema = 'public'
+            and tc.constraint_schema = 'public'
+            and tc.table_name = t
+            and tc.constraint_type = 'PRIMARY KEY'
+            and kcu.column_name = c.column_name
+        )
+    loop
+      execute format('alter table public.%I alter column %I drop not null', t, r.column_name);
+    end loop;
+  end loop;
+end $$;
+
 create sequence if not exists public.folio_seq;
 
 -- --------------------------------------------------------------------------

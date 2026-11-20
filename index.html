@@ -78,7 +78,7 @@ footer{max-width:820px;margin:0 auto;padding:0 24px 32px;color:var(--muted);font
 
 <main>
 <form id="form" novalidate>
-  <p class="intro">Este canal es para reportar situaciones de violencia laboral, acoso o conductas que afecten su seguridad y dignidad. Puede hacerlo sin dar su nombre. Llene los campos que apliquen; si el reporte es anónimo, detalle claramente el lugar y la hora.</p>
+  <p class="intro">Este canal es <strong>totalmente anónimo</strong>: no se pide nombre, correo, teléfono ni ningún dato que lo identifique. Es para reportar situaciones de violencia laboral, acoso o conductas que afecten su seguridad y dignidad. Detalle claramente qué ocurrió, dónde y cuándo.</p>
 
   <section class="card">
     <h2>1. ¿A quién desea enviar su reporte?</h2>
@@ -104,22 +104,7 @@ footer{max-width:820px;margin:0 auto;padding:0 24px 32px;color:var(--muted);font
   </section>
 
   <section class="card">
-    <h2>2. Tipo de reporte</h2>
-    <p class="sub">Si elige anónimo, no se solicitará ningún dato personal.</p>
-    <fieldset class="opts" aria-label="Tipo de reporte">
-      <label class="opt"><input type="radio" name="tipo" value="Anónimo" checked><div><b>Anónimo</b><span>No se pide nombre ni contacto.</span></div></label>
-      <label class="opt"><input type="radio" name="tipo" value="Confidencial con datos"><div><b>Confidencial con datos</b><span>Su identidad se mantiene bajo estricta reserva.</span></div></label>
-    </fieldset>
-    <div id="datos" class="hide">
-      <div class="row">
-        <div><label class="f" for="nombre">Nombre <small>(opcional)</small></label><input type="text" id="nombre" name="nombre" autocomplete="off"></div>
-        <div><label class="f" for="puesto">Puesto / Área</label><input type="text" id="puesto" name="puesto" autocomplete="off"></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="card">
-    <h2>3. Datos del reporte</h2>
+    <h2>2. Datos del reporte</h2>
     <div class="row">
       <div><label class="f" for="senalada">Nombre de la persona señalada</label><input type="text" id="senalada" name="senalada" autocomplete="off"></div>
       <div><label class="f" for="fecha">Fecha y hora del suceso <small>(aproximadas)</small></label><input type="datetime-local" id="fecha" name="fecha"></div>
@@ -152,8 +137,8 @@ footer{max-width:820px;margin:0 auto;padding:0 24px 32px;color:var(--muted);font
 
 <script>
 (function(){
-  // Para operar: pegar la URL del proyecto de Supabase y su clave pública (anon). Ver el script SQL.
-  var CONFIG = { supabaseUrl: "https://shnovudkujeljfeldimtwww.supabase.co", anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNobm92dWRrdXJlamZlZGltd3d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMxMTQxNzUsImV4cCI6MjEwODY5MDE3NX0.Z4V-Xz5j4-lgZINE5-tggYkMft1m5oiAIhvHsC0mP9I" };
+  // Ya configurado con el proyecto de Supabase de JBI. El backend (tablas, RLS y RPC) vive en supabase/schema.sql.
+  var CONFIG = { supabaseUrl: "https://shnovudkurejfedimwww.supabase.co", anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNobm92dWRrdXJlamZlZGltd3d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMxMTQxNzUsImV4cCI6MjEwODY5MDE3NX0.Z4V-Xz5j4-lgZINE5-tggYkMft1m5oiAIhvHsC0mP9I" };
   var $ = function(id){return document.getElementById(id)};
   var form = $("form");
   var info = {
@@ -166,7 +151,6 @@ footer{max-width:820px;margin:0 auto;padding:0 24px 32px;color:var(--muted);font
     $("just").classList.toggle("hide",!j);
     $("motivo").required = j; $("just-txt").required = j;
     $("route").innerHTML = d ? info[d] : "Seleccione un destino para ver quién recibirá su reporte.";
-    $("datos").classList.toggle("hide", val("tipo")!=="Confidencial con datos");
   }
   form.addEventListener("change", update); update();
 
@@ -177,8 +161,8 @@ footer{max-width:820px;margin:0 auto;padding:0 24px 32px;color:var(--muted);font
     if(!form.checkValidity()){ form.reportValidity(); return; }
     var fd = new FormData(form), data = {};
     fd.forEach(function(v,k){ if(String(v).trim()) data[k]=String(v).trim(); });
-    if(data.tipo==="Anónimo"){ delete data.nombre; delete data.puesto; }
     if(data.destino!=="JAVID"){ delete data.motivo; delete data.justificacion; }
+    data.tipo = "Anónimo"; // El buzón es totalmente anónimo: nunca se envía identidad.
     var btn = $("send"); btn.disabled = true;
     function ok(folio, preview){
       form.classList.add("hide"); $("done").classList.remove("hide");

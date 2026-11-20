@@ -104,7 +104,7 @@ footer{max-width:1100px;margin:0 auto;padding:0 24px 28px;color:var(--muted);fon
 
 <script>
 (function(){
-  // Para operar: pegar la URL del proyecto de Supabase y su clave pública (anon).
+  // Ya configurado con el proyecto de Supabase de JBI. El acceso lo imponen las políticas RLS de supabase/schema.sql.
   var CONFIG = { supabaseUrl: "https://shnovudkurejfedimwww.supabase.co", anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNobm92dWRrdXJlamZlZGltd3d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMxMTQxNzUsImV4cCI6MjEwODY5MDE3NX0.Z4V-Xz5j4-lgZINE5-tggYkMft1m5oiAIhvHsC0mP9I" };
   var $ = function(i){return document.getElementById(i)};
   var ETAPAS = ["Recepción","Análisis","Investigación","Resolución","Cerrado"], GRAV = ["Baja","Media","Alta"];
@@ -127,8 +127,12 @@ footer{max-width:1100px;margin:0 auto;padding:0 24px 28px;color:var(--muted);fon
     sb = sb || supabase.createClient(CONFIG.supabaseUrl, CONFIG.anonKey);
     return sb.auth.signInWithPassword({email:e,password:p}).then(function(r){
       if(r.error) throw r.error;
-      return sb.from("staff").select("nombre").eq("user_id", r.data.user.id).single();
-    }).then(function(r){ if(r.error||!r.data) throw (r.error && r.error.code!=="PGRST116" ? r.error : new Error("sin acceso")); return r.data; });
+      return sb.from("staff").select("nombre, rol, activo").eq("user_id", r.data.user.id).single();
+    }).then(function(r){
+      if(r.error||!r.data) throw (r.error && r.error.code!=="PGRST116" ? r.error : new Error("sin acceso"));
+      if(!r.data.activo || ["DO","RH","JAVID"].indexOf(r.data.rol) === -1) throw new Error("sin acceso");
+      return r.data;
+    });
   }
   function load(){
     if(demoMode) return Promise.resolve(demo);
@@ -168,7 +172,6 @@ footer{max-width:1100px;margin:0 auto;padding:0 24px 28px;color:var(--muted);fon
       h += "<p class=\"notice\">No tiene acceso al contenido de este caso. Solo puede consultar su folio y estatus.</p><div class=\"acts\"><button type=\"button\" id=\"x\">Cerrar</button></div>";
     } else {
       h += "<dl><dt>Canal</dt><dd>"+esc(d.destino)+"</dd><dt>Tipo de reporte</dt><dd>"+esc(d.tipo_reporte)+"</dd>"+
-        (d.denunciante_nombre?"<dt>Denunciante</dt><dd>"+esc(d.denunciante_nombre)+(d.denunciante_puesto?" · "+esc(d.denunciante_puesto):"")+"</dd>":"")+
         "<dt>Persona señalada</dt><dd>"+esc(d.persona_senalada||"—")+"</dd><dt>Fecha y hora</dt><dd>"+esc(d.fecha_suceso||"—")+"</dd><dt>Lugar</dt><dd>"+esc(d.lugar||"—")+"</dd>"+
         "<dt>Hechos</dt><dd>"+esc(d.hechos)+"</dd><dt>Testigos</dt><dd>"+esc((d.testigos||[]).join(", ")||"—")+"</dd>"+
         (d.destino==="JAVID"?"<dt>Justificación</dt><dd>"+esc(d.motivo_javid)+"\n"+esc(d.justificacion_javid)+"</dd>":"")+"</dl>"+

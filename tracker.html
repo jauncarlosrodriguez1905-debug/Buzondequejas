@@ -172,8 +172,8 @@ footer{max-width:1100px;margin:0 auto;padding:0 24px 28px;color:var(--muted);fon
       h += "<p class=\"notice\">No tiene acceso al contenido de este caso. Solo puede consultar su folio y estatus.</p><div class=\"acts\"><button type=\"button\" id=\"x\">Cerrar</button></div>";
     } else {
       h += "<dl><dt>Canal</dt><dd>"+esc(d.destino)+"</dd><dt>Tipo de reporte</dt><dd>"+esc(d.tipo_reporte)+"</dd>"+
-        "<dt>Persona señalada</dt><dd>"+esc(d.persona_senalada||"—")+"</dd><dt>Fecha y hora</dt><dd>"+esc(d.fecha_suceso||"—")+"</dd><dt>Lugar</dt><dd>"+esc(d.lugar||"—")+"</dd>"+
-        "<dt>Hechos</dt><dd>"+esc(d.hechos)+"</dd><dt>Testigos</dt><dd>"+esc((d.testigos||[]).join(", ")||"—")+"</dd>"+
+        "<dt>Persona reportada</dt><dd>"+esc(d.persona_senalada||"—")+"</dd><dt>Fecha y hora</dt><dd>"+esc(d.fecha_suceso||"—")+"</dd><dt>Lugar</dt><dd>"+esc(d.lugar||"—")+"</dd>"+
+        "<dt>Hechos</dt><dd>"+esc(d.hechos)+"</dd><dt>Nombre de testigos</dt><dd>"+esc((d.testigos||[]).join(", ")||"—")+"</dd>"+
         (d.destino==="JAVID"?"<dt>Justificación</dt><dd>"+esc(d.motivo_javid)+"\n"+esc(d.justificacion_javid)+"</dd>":"")+"</dl>"+
         "<form id=\"ef\"><div class=\"row2\"><div><label class=\"f\" for=\"e1\">Etapa</label><select id=\"e1\">"+opts(ETAPAS,r.etapa_actual)+"</select></div>"+
         "<div><label class=\"f\" for=\"e2\">Gravedad</label><select id=\"e2\"><option value=\"\">Sin definir</option>"+opts(GRAV,r.nivel_gravedad)+"</select></div>"+

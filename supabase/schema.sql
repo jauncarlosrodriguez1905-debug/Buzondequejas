@@ -266,3 +266,22 @@ end;
 $$;
 
 grant execute on function public.excluir_de_caso(text) to authenticated;
+
+-- --------------------------------------------------------------------------
+-- Personal delegado — dar de alta DESPUÉS de crear sus cuentas
+-- en Authentication > Users (correo y contraseña).
+-- Por cada uno, copia su UUID de Authentication > Users y corre su insert.
+-- --------------------------------------------------------------------------
+-- JAVID: Ruby Arriola <rarriola@javidmexico.com> — rol 'JAVID'
+--   insert into public.staff (user_id, nombre, rol)
+--   values ('<UUID de Ruby>', 'Ruby Arriola', 'JAVID');
+-- DO (Desarrollo Organizacional): Alejandro Castro <AlejandroCastro@JBI-Interiors.com> — rol 'DO'
+--   insert into public.staff (user_id, nombre, rol)
+--   values ('<UUID de Alejandro>', 'Alejandro Castro', 'DO');
+-- RH: Berenice Higuera <berenice.higuera@javidmexico.com> — rol 'RH'
+--   insert into public.staff (user_id, nombre, rol)
+--   values ('<UUID de Berenice>', 'Berenice Higuera', 'RH');
+--
+-- Con eso cada uno entra al tracker con su correo y contraseña, y solo ve
+-- el contenido de los casos de su destino: Ruby solo JAVID; Alejandro y
+-- Berenice solo RH/DO.

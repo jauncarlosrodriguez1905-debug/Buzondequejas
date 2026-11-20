@@ -36,6 +36,17 @@ denuncia, y la base de datos ni siquiera tiene columnas para guardarlo.
    Deploy from a branch > `main`). El buzón es `index.html` y el tracker
    es `tracker.html`.
 
+## Personal delegado
+
+| Destino | Nombre | Correo | Rol |
+|---|---|---|---|
+| JAVID (canal externo) | Ruby Arriola | rarriola@javidmexico.com | `JAVID` |
+| DO (Desarrollo Organizacional) | Alejandro Castro | AlejandroCastro@JBI-Interiors.com | `DO` |
+| RH | Berenice Higuera | berenice.higuera@javidmexico.com | `RH` |
+
+Cada uno entra al tracker con su correo y contraseña. Ruby solo ve los
+casos JAVID; Alejandro y Berenice solo ven los casos RH/DO.
+
 ## Notas
 
 - El cierre meta de cada caso es de 10 días a partir de la recepción.

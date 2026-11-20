@@ -15,6 +15,10 @@ denuncia, y la base de datos ni siquiera tiene columnas para guardarlo.
   cerrado), etapas, medidas y permite excusarse de un caso por conflicto
   de interés.
 - `supabase/schema.sql` — El backend: tablas, seguridad (RLS) y funciones.
+- `supabase/notify_email.sql` — Aviso por correo (opcional): cuando entra
+  un reporte nuevo, manda un correo profesional al personal que atiende
+  ese destino (JAVID → Ruby; RH/DO → Alejandro y Berenice), solo con
+  folio, fechas y enlace al tracker, nunca con el contenido.
 
 ## Quién ve qué
 
@@ -35,6 +39,11 @@ denuncia, y la base de datos ni siquiera tiene columnas para guardarlo.
 4. Publica los dos HTML (por ejemplo con GitHub Pages: Settings > Pages >
    Deploy from a branch > `main`). El buzón es `index.html` y el tracker
    es `tracker.html`.
+5. (Opcional) Aviso por correo: sigue los pasos de
+   `supabase/notify_email.sql`. Necesitas una cuenta gratis de SendGrid,
+   verificar un correo remitente y guardar su API Key en Supabase Vault.
+   Sin ese paso no llega ningún correo; los casos igual aparecen en el
+   tracker.
 
 ## Personal delegado
 

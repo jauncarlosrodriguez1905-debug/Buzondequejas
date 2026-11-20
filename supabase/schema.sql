@@ -57,6 +57,17 @@ create table if not exists public.casos (
   cerrado_en date
 );
 
+-- Por si la tabla casos ya existía de un intento anterior sin alguna columna:
+alter table public.casos add column if not exists id uuid default gen_random_uuid();
+alter table public.casos add column if not exists folio text;
+alter table public.casos add column if not exists destino text;
+alter table public.casos add column if not exists fecha_recepcion date not null default current_date;
+alter table public.casos add column if not exists nivel_gravedad text;
+alter table public.casos add column if not exists etapa_actual text not null default 'Recepción';
+alter table public.casos add column if not exists fecha_cierre_meta date;
+alter table public.casos add column if not exists medida_aplicada boolean not null default false;
+alter table public.casos add column if not exists cerrado_en date;
+
 create table if not exists public.casos_detalle (
   caso_id uuid primary key references public.casos (id) on delete cascade,
   tipo_reporte text not null default 'Anónimo',
@@ -71,12 +82,30 @@ create table if not exists public.casos_detalle (
   notas_investigacion text not null default ''
 );
 
+-- Por si la tabla casos_detalle ya existía sin alguna columna:
+alter table public.casos_detalle add column if not exists caso_id uuid;
+alter table public.casos_detalle add column if not exists tipo_reporte text not null default 'Anónimo';
+alter table public.casos_detalle add column if not exists persona_senalada text;
+alter table public.casos_detalle add column if not exists fecha_suceso timestamptz;
+alter table public.casos_detalle add column if not exists lugar text;
+alter table public.casos_detalle add column if not exists hechos text;
+alter table public.casos_detalle add column if not exists testigos text[] not null default '{}';
+alter table public.casos_detalle add column if not exists motivo_javid text;
+alter table public.casos_detalle add column if not exists justificacion_javid text;
+alter table public.casos_detalle add column if not exists medida_descripcion text not null default '';
+alter table public.casos_detalle add column if not exists notas_investigacion text not null default '';
+
 create table if not exists public.caso_exclusion (
   caso_id uuid not null references public.casos (id) on delete cascade,
   user_id uuid not null references auth.users (id) on delete cascade,
   created_at timestamptz not null default now(),
   primary key (caso_id, user_id)
 );
+
+-- Por si la tabla caso_exclusion ya existía sin alguna columna:
+alter table public.caso_exclusion add column if not exists caso_id uuid;
+alter table public.caso_exclusion add column if not exists user_id uuid;
+alter table public.caso_exclusion add column if not exists created_at timestamptz not null default now();
 
 create sequence if not exists public.folio_seq;
 
